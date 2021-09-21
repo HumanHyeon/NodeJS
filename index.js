@@ -8,7 +8,7 @@ app.use(bodyParser.urlencoded({extended: true}));	//applicatiopn/x-www-form-urle
 app.use(bodyParser.json());	//application/json 이렇게 된 부분을 분석해서 가져올 수 있게 함\
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('Hello World!44')
 })
 
 app.post('/register', (req, res) => {
