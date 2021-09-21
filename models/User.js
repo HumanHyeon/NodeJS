@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')	//bcrypt사용을 위해 선언
 const saltRounds = 10	//salt를 이용해서 암호화 할 것임(saltRounds는 salt가 몇 글자인지 나타냄)
+const jwt = require('jsonwebtoken')	//token생성을 위해 선언
 
 const userSchema = mongoose.Schema({	//스키마 만드는 작업
 	name: {
@@ -14,7 +15,7 @@ const userSchema = mongoose.Schema({	//스키마 만드는 작업
 	},
 	password: {
 		type: String,
-		minlength:4
+		minlength: 4
 	},
 	lastname: {
 		type: String,
@@ -51,6 +52,30 @@ userSchema.pre('save', function(next) { 	//mongose에서 가져온 메소드로 
 		next()
 	}
 })
+
+userSchema.methods.comparePassword = function(plainPassword, cb) {
+	//clinet가 입력한 password와 DB에서 가지고 있는 hash된 password가 맞는지 비교
+	bcrypt.compare(plainPassword, this.password, function(err, isMatch) {
+		if(err) return cb(err)	//비밀번호가 일치하지 않다
+		
+		cb(null, isMatch)
+	})
+}
+
+userSchema.methods.generateToken = function(cb) {
+	//jsonwebtoken을 이용해서 token을 생성하기
+	var user = this;
+
+	var token = jwt.sign(user._id.toHexString(), 'anythingIsOK')
+	//user._id + 'anythingIsOK' = token
+	//'anythingIsOK' -> user._id
+	user.token = token
+	user.save(function(err, user) {
+		if(err) return cb(err)	//에러 발생 시 에러 전달
+
+		cb(null, user)	//save가 잘 된다면 user정보만 전달
+	})
+}
 
 const User = mongoose.model('User', userSchema)	//스키마를 모델로 감싸줌
 
