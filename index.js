@@ -3,6 +3,7 @@ const app = express()
 const port = 5000
 const bodyParser = require('body-parser')	//bodyParser가져옴
 const { User } = require("./models/User");	//User.js의 모델을 가져옴
+const config = require('./config/key');	//key.js에 있는 정보를 mongoose.connect 부분에 가져오기 위해 사용
 
 app.use(bodyParser.urlencoded({extended: true}));	//applicatiopn/x-www-form-urlencoded 이렇게 된 데이터를 분석해서 가져올 수 있게 함
 app.use(bodyParser.json());	//application/json 이렇게 된 부분을 분석해서 가져올 수 있게 함\
@@ -26,7 +27,7 @@ app.post('/register', (req, res) => {
 })
 
 const mongoose = require('mongoose')
-mongoose.connect('mongodb+srv://sh:tpgus@nodejs.bbriz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', {
+mongoose.connect(config.mongoURI, {
 	//useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false
 	//몽구스 버전이 6.0이상이라면 항상 이 문장을 기억하고 실행하기 때문에 더이상 지원하지 않는다. 주석처리 안하면 에러
 }).then(() => console.log('MongoDB Connected...'))
